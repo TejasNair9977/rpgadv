@@ -104,6 +104,8 @@ def buy(inv):
             continue
         try:
             quantity = int(input("Quantity: "))
+            if quantity < 1:
+                raise ValueError
         except ValueError:
             print("Please enter a valid option!")
             continue
