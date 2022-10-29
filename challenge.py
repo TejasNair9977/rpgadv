@@ -74,10 +74,10 @@ you can buy/sell items or hunt. What do you want to do?")
             continue
 
 
-def input_checker():
+def input_checker(query=""):
     flag = True
     while flag == True:
-        choice1 = input()
+        choice1 = input(query)
         choice1 = choice1.lower()
         clist = choice1.split()
         for word in clist:
@@ -98,20 +98,27 @@ def buy(inv):
     for i in items:
         print(items[i]["item"], "for", items[i]["cost"])
     while True:
-        choice = input_checker()
+        choice = input_checker("Your choice: ")
         if choice not in items:
+            print("Please enter valid quantity!")
+            continue
+        try:
+            quantity = int(input("Quantity: "))
+            if quantity < 1:
+                raise ValueError
+        except ValueError:
             print("Please enter a valid option!")
             continue
-        print("You chose to buy a", items[choice]["item"])
-        if stats["coins"] >= items[choice]["cost"]:
-            stats["coins"] -= items[choice]["cost"]
+        print("You chose to buy {} {}(s)".format(quantity, items[choice]["item"]))
+        if stats["coins"] >= items[choice]["cost"]*quantity:
+            stats["coins"] -= items[choice]["cost"]*quantity
             if items[choice]["item"] == "Greatsword":
-                stats["strength"] += items[choice]["increase"]
+                stats["strength"] += items[choice]["increase"]*quantity
                 break
             elif items[choice]["item"] == "Magic Staff":
-                stats["intel"] += items[choice]["increase"]
+                stats["intel"] += items[choice]["increase"]*quantity
                 break
-            inv.append(items[choice]["item"])
+            inv.extend([items[choice]["item"]]*quantity)
         else:
             print("You do not have enough money to buy this!")
         break
