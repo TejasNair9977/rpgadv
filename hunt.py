@@ -1,5 +1,5 @@
 import random
-from database import edata, eboosters, spells, items, locations
+from database import edata, eboosters, spells, items, locations, print_colored
 
 
 def hunt(place, area, inv, *stats):
@@ -20,15 +20,14 @@ def hunt(place, area, inv, *stats):
         ehealth += int(etype["by"])
     elif etype["change"] == "xpdrop":
         extraxp = int(etype["by"])
-    print(f"You walk into the {area} and it wasn't long before you see a\
-", etype["name"], ename)
+    print_colored(f"You walk into the {area} and it wasn't long before you see a {etype['name']} {ename}", style="info")
 
     if speed >= espeed:
-        print("You were ready for this fight, and started your attack")
+        print_colored("You were ready for this fight, and started your attack", style="success")
     else:
-        print("You weren't ready for this fight, and the enemy attacked first")
+        print_colored("You weren't ready for this fight, and the enemy attacked first", style="danger")
         health -= estrength
-        print("You lost", estrength, "HP")
+        print_colored(f"You lost {estrength} HP", style="danger")
 
     fight = True
     playerturn = True
@@ -41,15 +40,16 @@ def hunt(place, area, inv, *stats):
         while playerturn:
             print("*" * 100)
             print(f"Turn:{turn}")
-            print("Your HP is:", health, "and the", ename, "has", ehp, "/", ehealth)
-            print("You also currently have", intel, "mana")
+            print_colored(f"Your HP is: {health} and the {ename} has {ehp} / {ehealth}", style="info")
+            print_colored(f"You also currently have {intel} mana", style="info")
             print("What do you want to do?")
-            choice = input("[attack, magic, potion, run] ")
+            print_colored("[attack, magic, potion, run]", style="warning")
+            choice = input()
             variant = random.randint(-1 / 5 * strength, 1 / 5 * strength)
 
             if choice == "attack":
                 ehp -= strength + variant
-                print("You attack, dealing", strength + variant, "points of damage.")
+                print_colored(f"Your attack, dealing {strength + variant} points of damage.", style="success")
                 playerturn = False
                 enemyturn = True
 
@@ -60,16 +60,16 @@ def hunt(place, area, inv, *stats):
                           "points of damage.")
 
                 while True:
-                    choice = input("[fireball, heal, thunderbolt/poison] ")
+                    print_colored("[fireball, heal, thunderbolt/poison]", style="warning")
+                    choice = input()
                     if choice == "fireball":
                         flag = spell_check(intel, choice)
                         if flag == False:
-                            print("You do not have enough mana!")
+                            print_colored("You do not have enough mana!", style="danger")
                             continue
                         ehp -= spells[choice]["effect"] + variant
                         intel -= spells[choice]["cost"]
-                        print("Fire bursts from your fingers, and engulfs your enemy, dealing\
-", spells[choice]["effect"] + variant, "points of damage.")
+                        print_colored(f"Fire bursts from your fingers, and engulfs your enemy, dealing {spells[choice]['effect'] + variant} points of damage.", style="success")
                         playerturn = False
                         enemyturn = True
                         break
@@ -77,12 +77,11 @@ def hunt(place, area, inv, *stats):
                     elif choice == "heal":
                         flag = spell_check(intel, choice)
                         if flag == False:
-                            print("You do not have enough mana!")
+                            print_colored("You do not have enough mana!", style="danger")
                             continue
                         health += spells[choice]["effect"] + variant
                         intel -= spells[choice]["cost"]
-                        print("You get surrounded by a warm green glow, and your wounds heal, you gain\
-", spells[choice]["effect"] + variant, "points of HP.")
+                        print_colored(f"You get surrounded by a warm green glow, and your wounds heal, you gain {spells[choice]['effect'] + variant} points of HP.", style="success")
                         playerturn = False
                         enemyturn = True
                         break
@@ -90,12 +89,11 @@ def hunt(place, area, inv, *stats):
                     elif choice == "poison":
                         flag = spell_check(intel, choice)
                         if flag == False:
-                            print("You do not have enough mana!")
+                            print_colored("You do not have enough mana!", style="danger")
                             continue
                         poisoned += spells[choice]["effect"]
                         intel -= spells[choice]["cost"]
-                        print("You release dark green gas from your hands, and your opponent gets poisoned for\
-", poisoned, "points of HP per turn.")
+                        print_colored(f"You release dark green gas from your hands, and your opponent gets poisoned for {poisoned} points of HP per turn.", style="success")
                         playerturn = False
                         enemyturn = True
                         break
@@ -103,12 +101,11 @@ def hunt(place, area, inv, *stats):
                     elif choice == "thunderbolt":
                         flag = spell_check(intel, choice)
                         if flag == False:
-                            print("You do not have enough mana!")
+                            print_colored("You do not have enough mana!", style="danger")
                             continue
                         ehp -= spells[choice]["effect"] + variant
                         intel -= spells[choice]["cost"]
-                        print("You raise your hand up to the sky and cast down lightning upon the enemy\
-", spells[choice]["effect"] + variant, "points of HP.")
+                        print_colored(f"You raise your hand up to the sky and cast down lightning upon the enemy {spells[choice]['effect'] + variant} points of HP.", style="success")
                         playerturn = False
                         enemyturn = True
                         break
@@ -129,29 +126,29 @@ def hunt(place, area, inv, *stats):
                             if "Health potion" in inv:
                                 inv.remove("Health potion")
                                 health += items["health"]["increase"]
-                                print("You gained", items["health"]["increase"], "HP and you now have", health, "HP")
+                                print_colored(f"You gained {items['health']['increase']} HP and you now have {health} HP", style="success")
                                 playerturn = False
                                 enemyturn = True
                                 break
                             else:
-                                print("You do not have any health potions!")
+                                print_colored("You do not have any health potions!", style="danger")
                                 break
                         elif choice == "mana":
                             if "Mana potion" in inv:
                                 inv.remove("Mana potion")
                                 intel += items["mana"]["increase"]
-                                print("You gained", items["mana"]["increase"], "int and you now have", intel, "int")
+                                print_colored(f"You gained {items['mana']['increase']} int and you now have {intel} int", style="success")
                                 playerturn = False
                                 enemyturn = True
                                 break
                             else:
-                                print("You do not have any mana potions!")
+                                print_colored("You do not have any mana potions!", style="danger")
                                 break
                         else:
                             print("Please enter a valid choice")
                             break
                 else:
-                    print("You do not have any potions!")
+                    print_colored("You do not have any potions!", style="danger")
                     continue
             elif choice == "run":
                 place = place[:4] + str(int(place[4]) - 1)
@@ -162,17 +159,16 @@ def hunt(place, area, inv, *stats):
                 print("Please enter a valid choice")
             if not poisoned == 0:
                 ehp -= poisoned
-                print("Your opponent was also poisoned, dealing", poisoned, "points of damage")
+                print_colored(f"Your opponent was also poisoned, dealing {poisoned} points of damage", style="success")
         if ehp > 0:
             while enemyturn:
                 print("*" * 100)
                 if not edata[place]["regen"] == 0 and not ehp == ehealth:
                     ehp += edata[place]["regen"]
-                    print("The enemy regenerates", edata[place]["regen"], "HP")
+                    print_colored(f"The enemy regenerates {edata[place]['regen']} HP", style="warning")
                 variant = random.randint(int(-1 / 5 * estrength), int(1 / 5 * estrength))
                 health -= (estrength + variant)
-                print("The", ename, "attacks, dealing", estrength + variant, "\
-points of damage")
+                print_colored(f"The {ename} attacks, dealing {estrength + variant} points of damage", style="warning")
                 enemyturn = False
                 playerturn = True
                 turn += 1
@@ -185,20 +181,19 @@ points of damage")
             tolevel = 10 * level
             if xp >= tolevel:
                 xp -= tolevel
-                print("You have gained a level!\n\
-+30 HP\n+5 Strength\n+50 Intelligence\n+1 Speed")
+                print_colored("You have gained a level!\n+30 HP\n+5 Strength\n+50 Intelligence\n+1 Speed", style="success")
                 strength += 5
                 health += 30
                 intel += 50
                 speed += 1
                 level += 1
             inv.append(drop)
-            print("You won this fight! You gain", str(edata[place]["xpdrop"] + extraxp + variant), "XP")
-            print("You also got a", drop[0], "worth", drop[1], "coins")
+            print_colored(f"You won this fight! You gain {edata[place]['xpdrop'] + extraxp + variant} XP", style="success")
+            print_colored(f"You also got a {drop[0]} worth {drop[1]} coins", style="success")
             fight = False
         if not health > 0:
             print("*" * 100)
-            print("You have died!")
+            print_colored("You have died!", style="danger")
             input("Press enter to exit")
             exit()
     stats = (health, coins, intel, strength, speed, level, xp)
