@@ -1,3 +1,5 @@
+from termcolor import colored
+
 # this is the players base stats, and it increases the more you play the game.
 
 stats = {"health": 50,
@@ -197,3 +199,19 @@ keywords = {"supplies": "buy",
 # this list stores all the locations you can reach in your hunts
 
 locations = ["town", "woods", "goblin camps", "badlands", "entrance", "castle", "throneroom"]
+
+# this function prints colored output according to style passed to it
+# Styles: None (empty), danger, success, info
+
+def print_colored(text: str = "", style: str = None):
+    if style == "danger":
+        print(colored(text, "red"))
+    elif style == "success":
+        print(colored(text, "green"))
+    elif style == "info":
+        print(colored(text, "blue"))
+    elif style == "warning":
+        print(colored(text, "yellow"))
+    else:
+        print(text)
+
